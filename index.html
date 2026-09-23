@@ -449,24 +449,35 @@
         let pieChartObj = null;
         let barChartObj = null;
 
-        // --- Tab Switcher ---
-        function switchTab(targetId) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            document.getElementById(targetId).classList.remove('hidden');
+       // --- Tab Switcher (แก้ไขใหม่เพื่อให้กราฟเรนเดอร์ถูกต้องเมื่อเปลี่ยนแท็บ) ---
+function switchTab(targetId) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+    document.getElementById(targetId).classList.remove('hidden');
 
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('bg-emerald-800', 'text-white');
-                btn.classList.add('text-emerald-100');
-                if(btn.dataset.target === targetId) {
-                    btn.classList.add('bg-emerald-800', 'text-white');
-                    btn.classList.remove('text-emerald-100');
-                }
-            });
-
-            if(targetId === 'map') {
-                setTimeout(() => { if(map) map.invalidateSize(); }, 200);
-            }
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('bg-emerald-800', 'text-white');
+        btn.classList.add('text-emerald-100');
+        if(btn.dataset.target === targetId) {
+            btn.classList.add('bg-emerald-800', 'text-white');
+            btn.classList.remove('text-emerald-100');
         }
+    });
+
+    // ตรวจสอบและสั่งอัปเดตขนาดกราฟเมื่อเปิดแท็บ Dashboard หรือ Analysis
+    setTimeout(() => {
+        if(targetId === 'map' && map) {
+            map.invalidateSize();
+        }
+        if(targetId === 'dashboard' && pieChartObj) {
+            pieChartObj.resize();
+            updateDashboardUI();
+        }
+        if(targetId === 'analysis' && barChartObj) {
+            barChartObj.resize();
+        }
+    }, 100);
+}
+
 
         // --- Initialize Leaflet Map ---
         function initMap() {
